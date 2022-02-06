@@ -10,6 +10,7 @@
 
 # production
 /build
+api.ts
 
 # misc
 .DS_Store

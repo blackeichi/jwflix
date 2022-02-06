@@ -1,10 +1,15 @@
 import { Link, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import {
+  animate,
+  motion,
+  useAnimation,
+  useViewportScroll,
+} from "framer-motion";
+import { useEffect, useState } from "react";
 import { cursorTo } from "readline";
 
-const Nav = styled.nav`
+const Nav = styled(motion.nav)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -95,13 +100,34 @@ const svg = {
   },
 };
 
+const navVariants = {
+  top: {
+    backgroundColor: "rgba(0,0,0,0)",
+  },
+  scroll: {
+    backgroundColor: "black",
+  },
+};
+
 function Header() {
   const homeMatch = useRouteMatch("/");
   const tvMatch = useRouteMatch("/tv");
   const [searchOpen, setSearchOpen] = useState(false);
   const toggleSearch = () => setSearchOpen((prev) => !prev);
+
+  const navAnimation = useAnimation();
+  const { scrollY } = useViewportScroll();
+  useEffect(() => {
+    scrollY.onChange(() => {
+      if (scrollY.get() > 95) {
+        navAnimation.start("scroll");
+      } else {
+        navAnimation.start("top");
+      }
+    });
+  });
   return (
-    <Nav>
+    <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>
         <Link to="/">
           <Logo

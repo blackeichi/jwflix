@@ -109,7 +109,7 @@ const navVariants = {
 };
 
 function Header() {
-  const homeMatch = useRouteMatch("/");
+  const homeMatch = useRouteMatch("/jwflix");
   const tvMatch = useRouteMatch("/tv");
   const [searchOpen, setSearchOpen] = useState(false);
   const toggleSearch = () => setSearchOpen((prev) => !prev);
@@ -128,7 +128,7 @@ function Header() {
   return (
     <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>
-        <Link to="/">
+        <Link to="/jwflix">
           <Logo
             xmlns="http://www.w3.org/2000/svg"
             width="1024"
@@ -154,7 +154,7 @@ function Header() {
             </Link>
           </Item>
           <Item>
-            <Link to="/">
+            <Link to="/jwflix">
               Home
               {homeMatch?.isExact === true ? (
                 <Circle layoutId="circle" />

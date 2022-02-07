@@ -7,7 +7,6 @@ import {
   useViewportScroll,
 } from "framer-motion";
 import { useEffect, useState } from "react";
-import { cursorTo } from "readline";
 
 const Nav = styled(motion.nav)`
   display: flex;

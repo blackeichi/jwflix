@@ -148,17 +148,17 @@ function Header() {
         </Link>
         <Items>
           <Item>
-            <Link to="/tv">
-              Tv Shows
-              {tvMatch?.isExact === true ? <Circle layoutId="circle" /> : null}
-            </Link>
-          </Item>
-          <Item>
             <Link to="/jwflix">
               Home
               {homeMatch?.isExact === true ? (
                 <Circle layoutId="circle" />
               ) : null}
+            </Link>
+          </Item>
+          <Item>
+            <Link to="/tv">
+              Tv Shows
+              {tvMatch?.isExact === true ? <Circle layoutId="circle" /> : null}
             </Link>
           </Item>
         </Items>

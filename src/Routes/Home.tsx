@@ -2,8 +2,9 @@ import { useQuery } from "react-query";
 import styled from "styled-components";
 import { getMovies, IGetMoviesResult } from "../api";
 import { makeImagePath } from "../utils";
-import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
 const Wrapper = styled.div`
   background: black;
@@ -83,6 +84,36 @@ const RowBox = styled(motion.div)`
 const RowButton = styled(motion.svg)`
   width: 20px;
 `;
+const Info = styled(motion.div)`
+  padding: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  width: 100%;
+  position: relative;
+  bottom: 5px;
+  display: flex;
+  justify-content: center;
+  h4 {
+    text-align: center;
+    font-size: 13px;
+    width: 90%;
+  }
+  svg {
+    position: absolute;
+    left: 3px;
+    width: 20px;
+    cursor: pointer;
+  }
+`;
+const Overlay = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+`;
+
 const rowVariants = {
   hidden: {
     x: window.outerWidth + 10,
@@ -119,40 +150,17 @@ const infoVariants = {
     },
   },
 };
-const MovieTitle = styled(motion.h5)`
-  position: absolute;
-  bottom: 0px;
-  color: ${(props) => props.theme.white.darker};
-  font-weight: 800;
-`;
-const movietitleVariants = {
-  hover: {
-    opacity: 0,
-    transition: {
-      delay: 0.5,
-      duration: 0,
-    },
-  },
-};
-const Info = styled(motion.div)`
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
-  opacity: 0;
-  width: 100%;
-  position: relative;
-  bottom: 5px;
-  h4 {
-    text-align: center;
-    font-size: 15px;
-  }
-`;
+
 const offset = 5;
 
 function Home() {
+  const history = useHistory();
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "nowPlaying"],
     getMovies
   );
+  const { scrollY } = useViewportScroll();
   const [rowHovered, setrowHovered] = useState(false);
   const toggleRowHover = () => {
     setrowHovered((prev) => !prev);
@@ -166,6 +174,10 @@ function Home() {
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
+  const onBoxOpen = (movieId: number) => {
+    history.push(`/movies/${movieId}`);
+  };
+  const onOverlayClick = () => history.push("/jwflix");
   return (
     <Wrapper>
       {isLoading ? (
@@ -192,7 +204,6 @@ function Home() {
                   .map((movie) => (
                     <Box
                       key={movie.id}
-                      //bgPhoto={makeImagePath(movie.backdrop_path, "w400")}
                       whileHover="hover"
                       initial="normal"
                       variants={boxVariants}
@@ -202,11 +213,23 @@ function Home() {
                         src={makeImagePath(movie.backdrop_path, "w500")}
                         style={{ objectFit: "cover" }}
                       ></motion.img>
-                      <MovieTitle variants={movietitleVariants}>
-                        {movie.title}
-                      </MovieTitle>
                       <Info variants={infoVariants}>
                         <h4>{movie.title}</h4>
+                        <svg
+                          onClick={() => onBoxOpen(movie.id)}
+                          aria-hidden="true"
+                          focusable="false"
+                          data-prefix="far"
+                          data-icon="arrow-alt-circle-down"
+                          role="img"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 512 512"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm0 448c-110.5 0-200-89.5-200-200S145.5 56 256 56s200 89.5 200 200-89.5 200-200 200zm-32-316v116h-67c-10.7 0-16 12.9-8.5 20.5l99 99c4.7 4.7 12.3 4.7 17 0l99-99c7.6-7.6 2.2-20.5-8.5-20.5h-67V140c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12z"
+                          ></path>
+                        </svg>
                       </Info>
                     </Box>
                   ))}
@@ -234,6 +257,32 @@ function Home() {
               </RowBox>
             ) : null}
           </Slider>
+          <AnimatePresence>
+            {bigMovieMatch ? (
+              <>
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  style={{
+                    top: scrollY.get() + 200,
+                    position: "absolute",
+                    width: "50vw",
+                    height: "60vh",
+                    backgroundColor: "red",
+                    left: 0,
+                    right: 0,
+                    margin: "0 auto",
+                  }}
+                />
+                <Overlay
+                  onClick={onOverlayClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                ></Overlay>
+              </>
+            ) : null}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>

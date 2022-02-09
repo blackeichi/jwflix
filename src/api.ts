@@ -20,8 +20,21 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 
+export interface IGetTheMovie {
+  adult: boolean;
+  backdrop_path: string;
+  gener: [name: string];
+  overview: string;
+}
+
 export function getMovies() {
   return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
-    (response) => response.json()
+    (response) => response.json(),
+  );
+}
+
+export function getTheMovie(ThemovieId: string) {
+  return fetch(`${BASE_PATH}/movie/${ThemovieId}?api_key=${API_KEY}`).then(
+    (response) => response.json,
   );
 }

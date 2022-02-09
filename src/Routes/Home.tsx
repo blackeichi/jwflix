@@ -158,7 +158,7 @@ function Home() {
   const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ["movies", "nowPlaying"],
-    getMovies
+    getMovies,
   );
   const { scrollY } = useViewportScroll();
   const [rowHovered, setrowHovered] = useState(false);
@@ -260,6 +260,11 @@ function Home() {
           <AnimatePresence>
             {bigMovieMatch ? (
               <>
+                <Overlay
+                  onClick={onOverlayClick}
+                  exit={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                ></Overlay>
                 <motion.div
                   initial={{ opacity: 0 }}
                   exit={{ opacity: 0 }}
@@ -274,12 +279,9 @@ function Home() {
                     right: 0,
                     margin: "0 auto",
                   }}
-                />
-                <Overlay
-                  onClick={onOverlayClick}
-                  exit={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                ></Overlay>
+                >
+                  <img></img>
+                </motion.div>
               </>
             ) : null}
           </AnimatePresence>

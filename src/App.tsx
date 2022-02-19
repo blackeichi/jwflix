@@ -9,7 +9,7 @@ function App() {
     <Router>
       <Header />
       <Switch>
-        <Route path="/tv">
+        <Route path={["/jwflix/tv", "/jwflix/tv/:movieId"]}>
           <Tv />
         </Route>
         <Route path="/search">

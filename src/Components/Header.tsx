@@ -1,4 +1,4 @@
-import { Link, useRouteMatch } from "react-router-dom";
+import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import styled from "styled-components";
 import {
   animate,
@@ -7,6 +7,7 @@ import {
   useViewportScroll,
 } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 const Nav = styled(motion.nav)`
   display: flex;
@@ -19,6 +20,7 @@ const Nav = styled(motion.nav)`
   font-size: 14px;
   padding: 20px 60px;
   color: white;
+  z-index: 2;
 `;
 
 const Col = styled.div`
@@ -53,7 +55,7 @@ const Item = styled.li`
   }
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   position: relative;
   color: white;
   display: flex;
@@ -108,9 +110,13 @@ const navVariants = {
   },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 function Header() {
   const homeMatch = useRouteMatch("/jwflix");
-  const tvMatch = useRouteMatch("/tv");
+  const tvMatch = useRouteMatch("/jwflix/tv");
   const [searchOpen, setSearchOpen] = useState(false);
   const toggleSearch = () => setSearchOpen((prev) => !prev);
 
@@ -125,6 +131,12 @@ function Header() {
       }
     });
   });
+  const history = useHistory();
+  const { register, handleSubmit } = useForm<IForm>();
+  const onValid = (data: IForm) => {
+    history.push(`/search?keyword=${data.keyword}`);
+    window.location.reload();
+  };
   return (
     <Nav variants={navVariants} animate={navAnimation} initial={"top"}>
       <Col>
@@ -156,7 +168,7 @@ function Header() {
             </Link>
           </Item>
           <Item>
-            <Link to="/tv">
+            <Link to="/jwflix/tv">
               Tv Shows
               {tvMatch?.isExact === true ? <Circle layoutId="circle" /> : null}
             </Link>
@@ -164,7 +176,7 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg
             style={{ cursor: "pointer" }}
             onClick={toggleSearch}
@@ -181,6 +193,7 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            {...register("keyword", { required: true, minLength: 2 })}
             placeholder="Search here!"
             initial={{ scaleX: 0 }}
             animate={{ scaleX: searchOpen ? 1 : 0 }}

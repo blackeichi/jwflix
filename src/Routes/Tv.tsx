@@ -204,10 +204,13 @@ function Tv() {
     getOntheair
   );
   console.log(onairtv);
+  const toggleLeaving = () => setLeaving((prev) => !prev);
   const [index, setIndex] = useState(0);
-
+  const [leaving, setLeaving] = useState(false);
   const increaseIndex = () => {
     if (onairtv) {
+      if (leaving) return;
+      toggleLeaving();
       const totalMovies = onairtv?.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -246,7 +249,7 @@ function Tv() {
           </Banner>
           <Rowname>On air TV shows</Rowname>
           <Slider onHoverStart={toggleRowHover} onHoverEnd={toggleRowHover}>
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
               <Row
                 variants={rowVariants}
                 initial="hidden"

@@ -9,6 +9,7 @@ import {
 } from "../api";
 import { makeImagePath, makeCompanyImg } from "../utils";
 import { AnimatePresence, motion, useViewportScroll } from "framer-motion";
+//AnimatePresence는 컴포넌트가 render되거나 destroy될 때 효과를 줌
 import { useEffect, useState } from "react";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 
@@ -273,8 +274,12 @@ function Home() {
   const [index, setIndex] = useState(0);
   const [index2, setIndex2] = useState(0);
   const [index3, setIndex3] = useState(0);
+  const [leaving, setLeaving] = useState(false);
+  const toggleLeaving = () => setLeaving((prev) => !prev);
   const increaseIndex = () => {
     if (data) {
+      if (leaving) return;
+      toggleLeaving();
       const totalMovies = data?.results.length - 1;
       const maxIndex = Math.floor(totalMovies / offset) - 1;
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -282,6 +287,8 @@ function Home() {
   };
   const increaseIndex2 = () => {
     if (data) {
+      if (leaving) return;
+      toggleLeaving();
       const totalMovies = data?.results.length;
       const maxIndex = Math.floor(totalMovies / offset);
       setIndex2((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -289,6 +296,8 @@ function Home() {
   };
   const increaseIndex3 = () => {
     if (data) {
+      if (leaving) return;
+      toggleLeaving();
       const totalMovies = data?.results.length;
       const maxIndex = Math.floor(totalMovies / offset);
       setIndex3((prev) => (prev === maxIndex ? 0 : prev + 1));
@@ -330,7 +339,7 @@ function Home() {
           {/*------------row1-------------*/}
           <Rowname style={{ top: "-180px" }}>Now Playing</Rowname>
           <Slider onHoverStart={toggleRowHover} onHoverEnd={toggleRowHover}>
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
               <Row
                 variants={rowVariants}
                 initial="hidden"
@@ -487,7 +496,7 @@ function Home() {
             onHoverStart={toggleRowHover2}
             onHoverEnd={toggleRowHover2}
           >
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
               <Row
                 variants={rowVariants}
                 initial="hidden"
@@ -644,7 +653,7 @@ function Home() {
             onHoverStart={toggleRowHover3}
             onHoverEnd={toggleRowHover3}
           >
-            <AnimatePresence initial={false}>
+            <AnimatePresence initial={false} onExitComplete={toggleLeaving}>
               <Row
                 variants={rowVariants}
                 initial="hidden"
